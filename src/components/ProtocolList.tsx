@@ -16,8 +16,8 @@ interface ProtocolListProps {
 export function ProtocolList({ onProtocolSelect, refreshTrigger }: ProtocolListProps) {
   const [protocols, setProtocols] = useState<Protocol[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
 
   const refreshProtocols = () => {
@@ -43,11 +43,11 @@ export function ProtocolList({ onProtocolSelect, refreshTrigger }: ProtocolListP
   const filteredProtocols = useMemo(() => {
     let filtered = searchQuery ? searchProtocols(searchQuery) : protocols;
     
-    if (statusFilter) {
+    if (statusFilter && statusFilter !== "all") {
       filtered = filtered.filter(p => p.status === statusFilter);
     }
     
-    if (typeFilter) {
+    if (typeFilter && typeFilter !== "all") {
       filtered = filtered.filter(p => p.type === typeFilter);
     }
     
@@ -73,7 +73,7 @@ export function ProtocolList({ onProtocolSelect, refreshTrigger }: ProtocolListP
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos os status</SelectItem>
+            <SelectItem value="all">Todos os status</SelectItem>
             {AttendanceStatus.map(status => (
               <SelectItem key={status} value={status}>{status}</SelectItem>
             ))}
@@ -85,7 +85,7 @@ export function ProtocolList({ onProtocolSelect, refreshTrigger }: ProtocolListP
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos os tipos</SelectItem>
+            <SelectItem value="all">Todos os tipos</SelectItem>
             {AttendanceTypes.map(type => (
               <SelectItem key={type} value={type}>{type}</SelectItem>
             ))}
@@ -107,18 +107,18 @@ export function ProtocolList({ onProtocolSelect, refreshTrigger }: ProtocolListP
         {filteredProtocols.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-muted-foreground mb-2">
-              {searchQuery || statusFilter || typeFilter 
+              {searchQuery || (statusFilter && statusFilter !== "all") || (typeFilter && typeFilter !== "all") 
                 ? "Nenhum protocolo encontrado com os filtros aplicados"
                 : "Nenhum protocolo cadastrado ainda"
               }
             </div>
-            {(searchQuery || statusFilter || typeFilter) && (
+            {(searchQuery || (statusFilter && statusFilter !== "all") || (typeFilter && typeFilter !== "all")) && (
               <Button
                 variant="outline"
                 onClick={() => {
                   setSearchQuery("");
-                  setStatusFilter("");
-                  setTypeFilter("");
+                  setStatusFilter("all");
+                  setTypeFilter("all");
                 }}
               >
                 Limpar filtros
