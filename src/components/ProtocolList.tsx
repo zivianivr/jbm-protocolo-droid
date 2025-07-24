@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -30,15 +30,15 @@ export function ProtocolList({ onProtocolSelect, refreshTrigger }: ProtocolListP
   };
 
   // Load protocols on mount and when refreshTrigger changes
-  useState(() => {
+  useEffect(() => {
     refreshProtocols();
-  });
+  }, []);
 
-  useState(() => {
+  useEffect(() => {
     if (refreshTrigger) {
       refreshProtocols();
     }
-  });
+  }, [refreshTrigger]);
 
   const filteredProtocols = useMemo(() => {
     let filtered = searchQuery ? searchProtocols(searchQuery) : protocols;
