@@ -40,10 +40,46 @@ export function ProtocolCard({ protocol, onViewDetails }: ProtocolCardProps) {
   };
 
   const handleDownload = () => {
-    // Simular download de PDF
+    // Criar conteúdo do PDF
+    const pdfContent = `
+PROTOCOLO JBM TELECOM
+Número: ${protocol.number}
+Data: ${new Date(protocol.createdAt).toLocaleDateString('pt-BR')} às ${protocol.time}
+Status: ${protocol.status}
+
+CLIENTE:
+Nome: ${protocol.clientName}
+Documento: ${protocol.clientDoc}
+Contato: ${protocol.clientContact}
+
+ATENDIMENTO:
+Tipo: ${protocol.type}
+Canal: ${protocol.channel}
+Atendente: ${protocol.attendant}
+
+DESCRIÇÃO:
+${protocol.description}
+
+${protocol.resolution ? `RESOLUÇÃO:\n${protocol.resolution}` : ''}
+
+---
+JBM Telecom - Sistema de Gestão de Protocolos
+    `;
+
+    // Criar e baixar o arquivo
+    const blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `protocolo-${protocol.number}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
     toast({
-      title: "Download iniciado",
-      description: "O PDF do protocolo está sendo preparado...",
+      title: "Download concluído",
+      description: `Arquivo protocolo-${protocol.number}.txt baixado com sucesso!`,
     });
   };
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,14 +7,26 @@ import { ProtocolForm } from "@/components/ProtocolForm";
 import { ProtocolList } from "@/components/ProtocolList";
 import { PlusIcon, FileTextIcon, SearchIcon, BarChart3Icon, PhoneIcon, MapPinIcon, MailIcon } from "lucide-react";
 import { Protocol } from "@/types/protocol";
+import { getProtocolStats } from "@/lib/protocol-generator";
 
 const Index = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [selectedProtocol, setSelectedProtocol] = useState<Protocol | null>(null);
+  const [stats, setStats] = useState({ total: 0, concluidos: 0, pendentes: 0, emAndamento: 0 });
 
   const handleProtocolCreated = () => {
     setRefreshTrigger(prev => prev + 1);
+    updateStats();
   };
+
+  const updateStats = () => {
+    const newStats = getProtocolStats();
+    setStats(newStats);
+  };
+
+  useEffect(() => {
+    updateStats();
+  }, [refreshTrigger]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -100,8 +112,8 @@ const Index = () => {
                   <CardTitle className="text-sm font-medium">Total de Protocolos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-primary">0</div>
-                  <p className="text-xs text-muted-foreground">Este mês</p>
+                  <div className="text-2xl font-bold text-primary">{stats.total}</div>
+                  <p className="text-xs text-muted-foreground">Total cadastrados</p>
                 </CardContent>
               </Card>
               
@@ -110,7 +122,7 @@ const Index = () => {
                   <CardTitle className="text-sm font-medium">Concluídos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-500">0</div>
+                  <div className="text-2xl font-bold text-green-500">{stats.concluidos}</div>
                   <p className="text-xs text-muted-foreground">Resolvidos</p>
                 </CardContent>
               </Card>
@@ -120,18 +132,18 @@ const Index = () => {
                   <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-yellow-500">0</div>
+                  <div className="text-2xl font-bold text-yellow-500">{stats.pendentes}</div>
                   <p className="text-xs text-muted-foreground">Aguardando</p>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Tempo Médio</CardTitle>
+                  <CardTitle className="text-sm font-medium">Em Andamento</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-500">--</div>
-                  <p className="text-xs text-muted-foreground">Resolução</p>
+                  <div className="text-2xl font-bold text-blue-500">{stats.emAndamento}</div>
+                  <p className="text-xs text-muted-foreground">Ativos</p>
                 </CardContent>
               </Card>
             </div>
